@@ -5,7 +5,7 @@ namespace EvolutionSim
 	{
         static void Main(string[] args)
         {
-            Console.WriteLine("AHHH");
+            //TODO: IDK, fuckin everything. Probably use windows forms
         }
     }
 }

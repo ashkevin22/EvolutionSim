@@ -8,6 +8,8 @@ namespace EvolutionSim
 		public double xLoc;
 		public double yLoc;
 
+		protected const double _energyLossPerMove = 1;
+
 		/// <summary>
 		/// Function to move the Animal
 		/// </summary>
