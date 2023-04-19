@@ -34,9 +34,9 @@ namespace EvolutionSim
 			double radius;
 			for(int i = 0; i < numberOfLakes; i++)
 			{
-				newLake.x = rand.NextInt64(2, (int)Math.Round(xBound) - 2);
-				newLake.y = rand.NextInt64(2, (int)Math.Round(xBound) - 2);
-				radius = rand.NextInt64(1, (int)Math.Round(xBound / 10));
+				radius = rand.NextInt64(2, (int)Math.Round(xBound / 5));
+				newLake.x = rand.NextInt64((int)radius, (int)Math.Round(xBound) - (int)radius);
+				newLake.y = rand.NextInt64((int)radius, (int)Math.Round(xBound) - (int)radius);
 				Lakes.Add(new Circle(newLake, radius));
             }
 		}
@@ -49,7 +49,7 @@ namespace EvolutionSim
 		/// <returns></returns>
 		public bool CheckValidPos(double x, double y)
 		{
-			if(x > xBound || x < 0 || y > yBound || y < 0) { return false; }
+			if(x > (xBound-2) || x < 2 || y > (yBound-2)|| y < 2) { return false; }
 			for (int i = 0; i < Lakes.Count; i++)
 			{
 				Circle Lake = Lakes[i];

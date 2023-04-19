@@ -3,7 +3,7 @@ namespace EvolutionSim
 {
 	public sealed class MapControlSingleton
 	{
-		public MapControlSingleton? _instance = null;
+		public static MapControlSingleton? _instance = null;
 		public Map? Map = null;
 		public List<Predator> Predators;
 		public List<Prey> Prey;
@@ -25,8 +25,9 @@ namespace EvolutionSim
 		/// Generates a new instance if there is not already one
 		/// </summary>
 		/// <returns>Instance of the MapControlSingleton class</returns>
-		public MapControlSingleton GetInstance()
+		public static MapControlSingleton GetInstance()
 		{
+
 			if(_instance == null)
 			{
 				_instance = new MapControlSingleton();
@@ -35,14 +36,38 @@ namespace EvolutionSim
 		}
 
 		/// <summary>
-		/// Function to create a new map from the given parameters
+		/// Function to create the simulation
 		/// </summary>
-		/// <param name="xBound">x limit for the map</param>
-		/// <param name="yBound">y limit for the map</param>
-		/// <param name="numLakes">number of lakes in the map</param>
-		public void CreateMap(double xBound, double yBound, int numLakes)
+		/// <param name="map">map object cretaed by MainWindow</param>
+		/// <param name="numPreds">initial number of predators</param>
+		/// <param name="numPrey">initial number of prey</param>
+		public void CreateSimulation(Map map, int numPreds, int numPrey)
 		{
-			Map = new Map(xBound, yBound, numLakes);
+			Random rand = new();
+			double xPos = -1;
+			double yPos = -1;
+			this.Map = map;
+			// TODO: generate predators and prey in packs maybe?
+			// Generate all of the predators
+			for(int i = 0; i < numPreds; i++)
+			{
+				do
+				{
+					xPos = rand.NextDouble() * Map.xBound;
+					yPos = rand.NextDouble() * Map.yBound;
+				} while (!Map.CheckValidPos(xPos, yPos));
+				Predators.Add(new Predator(xPos, yPos));
+			}
+			// Generate all of the prey
+			for(int i = 0; i < numPrey; i++)
+			{
+				do
+				{
+					xPos = rand.NextDouble() * Map.xBound;
+					yPos = rand.NextDouble() * Map.yBound;
+				} while (!Map.CheckValidPos(xPos, yPos));
+				Prey.Add(new Prey(xPos, yPos));
+			}
 		}
 
 		/// <summary>
@@ -50,8 +75,18 @@ namespace EvolutionSim
 		/// </summary>
 		public void RunIteration()
 		{
-			//TODO: IDFK this shit is hard
-		}
+			Random rand = new();
+			// Move all the predators
+			for(int i = 0; i < Predators.Count; i++)
+			{
+				Predators[i].Move(Map);				
+            }
+            // Move all the prey
+            for (int i = 0; i < Prey.Count; i++)
+            {
+                Prey[i].Move(Map);
+            }
+        }
 
 		/// <summary>
 		/// Function to check if there are any prey that can be eaten by a given predator

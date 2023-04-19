@@ -3,15 +3,27 @@ namespace EvolutionSim
 {
 	public class Predator : Animal
 	{
-		public Predator()
+		public Predator(double x, double y)
 		{
-            //TODO: what the fuck is a neural network
+            //TODO: Neural network
+            this.xLoc = x;
+            this.yLoc = y;
 		}
 
-        public override (double, double) Move()
+        public override void Move(Map map)
         {
+            // TODO: neural network stuff 
+            Random rand = new();
             this.Energy -= _energyLossPerMove;
-            throw new NotImplementedException();
+            double newX;
+            double newY;
+            do
+            {
+                newX = xLoc + (rand.NextDouble() * 6) - 3;
+                newY = yLoc + (rand.NextDouble() * 6) - 3;
+            } while (!map.CheckValidPos(newX, newY));
+            xLoc = newX;
+            yLoc = newY;
         }
 
         public override Animal Reproduce()
