@@ -19,8 +19,8 @@ namespace EvolutionSim
             double newY;
             do
             {
-                newX = xLoc + (rand.NextDouble() * 6) - 3;
-                newY = yLoc + (rand.NextDouble() * 6) - 3;
+                newX = xLoc + (rand.NextDouble() * 0.5 - 0.23);
+                newY = yLoc + (rand.NextDouble() * 0.5 - 0.23);
             } while (!map.CheckValidPos(newX, newY));
             xLoc = newX;
             yLoc = newY;

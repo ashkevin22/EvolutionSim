@@ -30,8 +30,11 @@ namespace Display
         private int numLakes = 4;
         private int InitialPrey = 20;
         private int InitialPreds = 20;
-        private int NumIters = 10;
+        private int NumIters = 500;
         private SimulationState SimState = SimulationState.Uninitialized;
+
+        private Thread DisplayThread;
+        private static ManualResetEvent mre = new ManualResetEvent(false);
 
         public MainWindow()
         {
@@ -65,7 +68,7 @@ namespace Display
                 drawLake.Stroke = Brushes.Blue;
                 (double x, double y) center = MapPointToDrawPoint(lake.Center);
                 (double r1, double r2) radius = MapPointToDrawPoint((lake.Radius, lake.Radius));
-                drawLake.Data = new EllipseGeometry(new Point(center.x, center.y), radius.r1, radius.r2);
+                drawLake.Data = new EllipseGeometry(new Point(center.x, center.y), radius.r1*0.95, radius.r2*0.95);
                 MapCanvas.Children.Add(drawLake);
             }
         }
@@ -93,6 +96,7 @@ namespace Display
                     SimulationButton.Background = Brushes.LightGreen;
                     SimulationButton.Content = "Resume Simulation";
                     SimState = SimulationState.Stopped;
+                    PauseSimulation();
                     break;
                 case SimulationState.Stopped:
                     // TODO: restart simulation
@@ -100,6 +104,7 @@ namespace Display
                     SimulationButton.Background = Brushes.Red;
                     SimulationButton.Content = "Stop Simulation";
                     SimState = SimulationState.Running;
+                    RestartSimulation();
                     break;
             }
         }
@@ -111,7 +116,7 @@ namespace Display
         {
             MapControl = MapControlSingleton.GetInstance();
             MapControl.CreateSimulation(Map, InitialPreds, InitialPrey);
-            Thread DisplayThread = new Thread(DisplayLoop);
+            DisplayThread = new Thread(DisplayLoop);
             DisplayThread.Start();
             //Trace.WriteLine("Here");
             //for(int i = 0; i < NumIters; i++)
@@ -126,7 +131,7 @@ namespace Display
         /// </summary>
         void RestartSimulation()
         {
-
+            mre.Set();
         }
 
         /// <summary>
@@ -134,7 +139,7 @@ namespace Display
         /// </summary>
         void PauseSimulation()
         {
-            //TODO: Stop sim
+            mre.WaitOne();
         }
 
         /// <summary>
@@ -149,8 +154,12 @@ namespace Display
             {
                 if(count >= _loopsBetweenDisplay)
                 {
-                    Trace.WriteLine("display");
                     count = 0;
+                    // Remove all previous drawings of the animals
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        AnimalCanvas.Children.Clear();
+                    });
                     for(int j = 0; j < MapControl.Predators.Count; j++)
                     {
                         DisplayPredator(MapControl.Predators[j].xLoc, MapControl.Predators[j].yLoc);
@@ -163,7 +172,7 @@ namespace Display
 
                 MapControl.RunIteration();
                 count++;
-                Thread.Sleep(1000);
+                Thread.Sleep(10);
             }
         }
 
@@ -176,12 +185,14 @@ namespace Display
         {
             this.Dispatcher.Invoke(() =>
             {
-                Path drawPred = new();
-                drawPred.Fill = Brushes.Red;
-                drawPred.Stroke = Brushes.Red;
+                Path drawPred = new()
+                {
+                    Fill = Brushes.Red,
+                    Stroke = Brushes.Red
+                };
                 (double x, double y) position = MapPointToDrawPoint((x, y));
                 drawPred.Data = new RectangleGeometry(new Rect(new Point(position.x, position.y), new Size(10, 10)));
-                MapCanvas.Children.Add(drawPred);
+                AnimalCanvas.Children.Add(drawPred);
             });
         }
 
@@ -194,12 +205,14 @@ namespace Display
         {
             this.Dispatcher.Invoke(() =>
             {
-                Path drawPrey = new();
-                drawPrey.Fill = Brushes.Gold;
-                drawPrey.Stroke = Brushes.Gold;
+                Path drawPrey = new()
+                {
+                    Fill = Brushes.Gold,
+                    Stroke = Brushes.Gold
+                };
                 (double x, double y) position = MapPointToDrawPoint((x, y));
                 drawPrey.Data = new EllipseGeometry(new Point(position.x, position.y), 5, 5);
-                MapCanvas.Children.Add(drawPrey);
+                AnimalCanvas.Children.Add(drawPrey);
             });
         }
 

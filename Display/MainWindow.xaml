@@ -24,7 +24,7 @@
             <Canvas Name="MapCanvas" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
             </Canvas>
-            <Canvas Name="PredatorCanvas" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            <Canvas Name="AnimalCanvas" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
                 
             </Canvas>
