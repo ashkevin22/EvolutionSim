@@ -3,7 +3,7 @@ C# program created to simulate evolution in predator and prey using neural netwo
 
 Link to video: https://drive.google.com/file/d/1gXmu5hjsTlR9lhXnVLpZbPs0x7CguWgZ/view?usp=sharing
 
-Link to final Class Diagram: [Documentation/Project7PDF]
+Link to final Class Diagram: [Project7ClassDiagram](Documentation/Project7PDF)
 
 ## Group Members
 - Kevin Ash
