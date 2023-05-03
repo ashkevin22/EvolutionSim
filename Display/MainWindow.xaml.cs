@@ -154,7 +154,7 @@ namespace Display
         /// </summary>
         void PauseSimulation()
         {
-            mre.WaitOne();
+            App.Current.Shutdown();
         }
 
         /// <summary>

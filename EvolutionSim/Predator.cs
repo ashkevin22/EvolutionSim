@@ -119,7 +119,7 @@ namespace EvolutionSim
                 childX = xLoc + ((xMove - 0.5) * _maxMoveDist);
                 childY = yLoc + ((yMove - 0.5) * _maxMoveDist);
             } while (!map.CheckValidPos(childX, childY));
-            return new Predator(childX, childY, net);
+            return AnimalFactory.CreateAnimal(AnimalType.Predator, childX, childY, net);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ namespace EvolutionSim
 {
 	public sealed class MapControlSingleton
 	{
+		private List<Observer> Observers = new();
 		public static MapControlSingleton? _instance = null;
 		public Map? Map = null;
 		public List<Predator> Predators;
@@ -21,6 +22,7 @@ namespace EvolutionSim
 		{
 			Predators = new List<Predator>();
 			Prey = new List<Prey>();
+			Observers.Add(new Logger());
         }
 
 		/// <summary>
@@ -59,7 +61,7 @@ namespace EvolutionSim
 					xPos = rand.NextDouble() * Map.xBound;
 					yPos = rand.NextDouble() * Map.yBound;
 				} while (!Map.CheckValidPos(xPos, yPos));
-				Predators.Add(new Predator(xPos, yPos));
+				Predators.Add((Predator)AnimalFactory.CreateAnimal(AnimalType.Predator, xPos, yPos));
 			}
 			// Generate all of the prey
 			for(int i = 0; i < numPrey; i++)
@@ -69,7 +71,7 @@ namespace EvolutionSim
 					xPos = rand.NextDouble() * Map.xBound;
 					yPos = rand.NextDouble() * Map.yBound;
 				} while (!Map.CheckValidPos(xPos, yPos));
-				Prey.Add(new Prey(xPos, yPos));
+				Prey.Add((Prey)AnimalFactory.CreateAnimal(AnimalType.Prey, xPos, yPos));
 			}
 		}
 
@@ -110,6 +112,10 @@ namespace EvolutionSim
 					Prey.Remove(prey);
 				}
             }
+			for(int i = 0; i < Observers.Count; i++)
+			{
+				Observers[i].Update(Predators.Count, Prey.Count);
+			}
         }
 
 		/// <summary>

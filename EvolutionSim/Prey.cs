@@ -118,7 +118,7 @@ namespace EvolutionSim
                 childX = xLoc + (rand.NextDouble() * 0.5 - 0.23);
                 childY = yLoc + (rand.NextDouble() * 0.5 - 0.23);
             } while (!map.CheckValidPos(childX, childY));
-            return new Prey(childX, childY, net);
+            return AnimalFactory.CreateAnimal(AnimalType.Prey, childX, childY, net);
         }
 
         /// <summary>
