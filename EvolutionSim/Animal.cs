@@ -3,25 +3,25 @@ namespace EvolutionSim
 {
 	public abstract class Animal
 	{
-		public double Energy = 100;
-		public NeuralNet NeuralNetwork;
+		public double EnergyLevel = 100;
+		public double ReproduceLevel = 0;
+        public NeuralNet NeuralNetwork;
 		public double xLoc;
 		public double yLoc;
 
-		protected const double _energyLossPerMove = 1;
 
 		/// <summary>
 		/// Function to move the Animal
 		/// </summary>
 		/// <param name="map">Map object to check for valid moves</param>
-		/// <returns>returns new position of the Animal</returns>
-		public abstract void Move(Map map);
+		/// <returns>returns new offspring if reproduced, null otherwise</returns>
+		public abstract (Animal? offspring, bool isDead) Move(Map map, Animal? closestAnimal);
 
 		/// <summary>
 		/// Function to reproduce and create a new Animal based on the parent(s)
 		/// </summary>
 		/// <returns>new offspring Animal</returns>
-		public abstract Animal Reproduce();
+		public abstract Animal Reproduce(Map map, NeuralNet net);
 	}
 }
 

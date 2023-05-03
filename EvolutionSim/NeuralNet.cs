@@ -20,16 +20,30 @@ namespace EvolutionSim
 			int numLayers = topology.Count;
 			for(int layerNum = 0; layerNum < numLayers; layerNum++)
 			{
-				List<Neuron> newLayer = new();
-				int numOutputs = layerNum == topology.Count() - 1 ? 0 : topology[layerNum + 1];
+				m_layers.Add(new List<Neuron>());
+				int numOutputs = layerNum == topology.Count - 1 ? 0 : topology[layerNum + 1];
 
 				for(int neuronNum = 0; neuronNum <= topology[layerNum]; neuronNum++)
 				{
-					newLayer.Add(new Neuron(numOutputs, neuronNum));
+					m_layers.Last().Add(new Neuron(numOutputs, neuronNum));
 				}
-				newLayer.Last().m_outputVal = 1.0;
-				m_layers.Add(newLayer);
+				m_layers.Last().Last().m_outputVal = 1.0;
 			}
+		}
+
+		/// <summary>
+		/// Funciton to get the results from the feed forward function of the neural network
+		/// </summary>
+		/// <returns>outputs of the nodes in the final layer of the network</returns>
+		public List<double> GetResults()
+		{
+			List<double> results = new();
+
+			for(int n = 0; n < m_layers.Last().Count - 1; n++)
+			{
+				results.Add(m_layers.Last()[n].m_outputVal);
+			}
+			return results;
 		}
 
 		/// <summary>
@@ -38,7 +52,7 @@ namespace EvolutionSim
 		/// <param name="inputVals">Initial input values for the neural network</param>
 		public void FeedForward(List<double> inputVals)
 		{
-			Debug.Assert(inputVals.Count == m_layers[0].Count - 1);
+			//Debug.Assert(inputVals.Count == m_layers[0].Count - 1);
 
 			for(int i = 0; i < inputVals.Count; i++)
 			{
@@ -48,7 +62,7 @@ namespace EvolutionSim
 			for(int layerNum = 1; layerNum < m_layers.Count; layerNum++)
 			{
 				List<Neuron> prevLayer = m_layers[layerNum - 1];
-				for(int i = 0; i < m_layers[layerNum].Count; i++)
+				for(int i = 0; i < m_layers[layerNum].Count - 1; i++)
 				{
 					m_layers[layerNum][i].FeedForward(prevLayer);
 				}

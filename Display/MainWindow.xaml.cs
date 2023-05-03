@@ -71,6 +71,7 @@ namespace Display
                 drawLake.Data = new EllipseGeometry(new Point(center.x, center.y), radius.r1*0.95, radius.r2*0.95);
                 MapCanvas.Children.Add(drawLake);
             }
+            SimulationButton.IsEnabled = true;
         }
 
         /// <summary>
@@ -80,6 +81,8 @@ namespace Display
         /// <param name="e"></param>
         void ChangeSimState(object sender, RoutedEventArgs e)
         {
+            PredatorsTextBox.IsEnabled = false;
+            PreyTextBox.IsEnabled = false;
             switch (SimState)
             {
                 case SimulationState.Uninitialized:
@@ -88,6 +91,23 @@ namespace Display
                     SimulationButton.Background = Brushes.Red;
                     SimulationButton.Content = "Stop Simulation";
                     SimState = SimulationState.Running;
+                    try
+                    {
+                        Debug.WriteLine(PredatorsTextBox.Text);
+                        InitialPreds = Convert.ToInt32(PredatorsTextBox.Text);
+                    }
+                    catch
+                    {
+                        InitialPreds = 20;
+                    }
+                    try
+                    {
+                        InitialPrey = Convert.ToInt32(PreyTextBox.Text);
+                    }
+                    catch
+                    {
+                        InitialPrey = 20;
+                    }
                     BeginSimulation();
                     break;
                 case SimulationState.Running:
@@ -115,15 +135,10 @@ namespace Display
         void BeginSimulation()
         {
             MapControl = MapControlSingleton.GetInstance();
+            Debug.WriteLine(InitialPreds);
             MapControl.CreateSimulation(Map, InitialPreds, InitialPrey);
             DisplayThread = new Thread(DisplayLoop);
             DisplayThread.Start();
-            //Trace.WriteLine("Here");
-            //for(int i = 0; i < NumIters; i++)
-            //{
-            //    DisplayLoop();
-            //    Thread.Sleep(1000);
-            //}
         }
 
         /// <summary>
@@ -172,7 +187,7 @@ namespace Display
 
                 MapControl.RunIteration();
                 count++;
-                Thread.Sleep(10);
+                Thread.Sleep(50);
             }
         }
 
@@ -191,7 +206,7 @@ namespace Display
                     Stroke = Brushes.Red
                 };
                 (double x, double y) position = MapPointToDrawPoint((x, y));
-                drawPred.Data = new RectangleGeometry(new Rect(new Point(position.x, position.y), new Size(10, 10)));
+                drawPred.Data = new RectangleGeometry(new Rect(new Point(position.x, position.y), new Size(7, 7)));
                 AnimalCanvas.Children.Add(drawPred);
             });
         }
@@ -211,7 +226,7 @@ namespace Display
                     Stroke = Brushes.Gold
                 };
                 (double x, double y) position = MapPointToDrawPoint((x, y));
-                drawPrey.Data = new EllipseGeometry(new Point(position.x, position.y), 5, 5);
+                drawPrey.Data = new EllipseGeometry(new Point(position.x, position.y), 4, 4);
                 AnimalCanvas.Children.Add(drawPrey);
             });
         }

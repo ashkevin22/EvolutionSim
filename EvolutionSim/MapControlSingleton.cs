@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Xml.XPath;
+
 namespace EvolutionSim
 {
 	public sealed class MapControlSingleton
@@ -9,7 +12,7 @@ namespace EvolutionSim
 		public List<Prey> Prey;
 
 		// distance in which predators can eat the prey
-		private const double _eatThresholdDist = 2;
+		private const double _eatThresholdDist = 1;
 
 		/// <summary>
 		/// Private constructor for the singleton that sets the Predators and Prey Lists to empty lists
@@ -79,32 +82,100 @@ namespace EvolutionSim
 			// Move all the predators
 			for(int i = 0; i < Predators.Count; i++)
 			{
-				Predators[i].Move(Map);				
+				Predator pred = Predators[i];
+				Prey closestPrey = GetClosestPrey(pred.xLoc, pred.yLoc);
+				CheckCanEat(pred, closestPrey);
+				(Animal? offspring, bool isDead) = Predators[i].Move(Map, closestPrey);
+				if(offspring != null)
+				{
+					Predators.Add((Predator)offspring);
+				}
+                if (isDead)
+                {
+                    Predators.Remove(pred);
+                }
             }
             // Move all the prey
             for (int i = 0; i < Prey.Count; i++)
             {
-                Prey[i].Move(Map);
+				Prey prey = Prey[i];
+				Predator? closestPred = GetClosestPredator(prey.xLoc, prey.yLoc);
+                (Animal? offspring, bool isDead) = Prey[i].Move(Map, closestPred);
+                if (offspring != null)
+                {
+                    Prey.Add((Prey)offspring);
+                }
+				if (isDead)
+				{
+					Prey.Remove(prey);
+				}
             }
         }
 
 		/// <summary>
-		/// Function to check if there are any prey that can be eaten by a given predator
+		/// Get the closest prey to the given position
 		/// </summary>
-		/// <param name="predator">Predator to check for prey to eat</param>
-		/// <returns>Prey that were eaten, null if there wasn't one</returns>
-		public Prey? CheckCanEat(Predator predator)
+		/// <param name="xPos">x position</param>
+		/// <param name="yPos">y position</param>
+		/// <returns>prey closest to the given position</returns>
+		public Prey? GetClosestPrey(double xPos, double yPos)
 		{
-			Prey prey;
+			Prey? closestPrey = null;
+			Prey tempPrey;
+			double closestDist = int.MaxValue;
 			for(int i = 0; i < Prey.Count; i++)
 			{
-				prey = Prey[i];
+				tempPrey = Prey[i];
 				// using manhattan distance in the hopes that it'll make this run faster
-				if(Math.Abs(prey.xLoc - predator.xLoc) + Math.Abs(prey.yLoc - predator.yLoc) < _eatThresholdDist)
+				double tempDist = Math.Abs(tempPrey.xLoc - xPos) + Math.Abs(tempPrey.yLoc - yPos);
+                if (tempDist < closestDist)
 				{
-					predator.Eat(prey);
-					return prey;
+					closestDist = tempDist;
+					closestPrey = tempPrey;
 				}
+			}
+			return closestPrey;
+		}
+
+        /// <summary>
+        /// Get the closest predator to the given position
+        /// </summary>
+        /// <param name="xPos">x position</param>
+        /// <param name="yPos">y position</param>
+        /// <returns>predator closest to the given position</returns>
+        public Predator? GetClosestPredator(double xPos, double yPos)
+        {
+            Predator? closestPredator = null;
+            Predator tempPredator;
+            double closestDist = int.MaxValue;
+            for (int i = 0; i < Predators.Count; i++)
+            {
+                tempPredator = Predators[i];
+                // using manhattan distance in the hopes that it'll make this run faster
+                double tempDist = Math.Abs(tempPredator.xLoc - xPos) + Math.Abs(tempPredator.yLoc - yPos);
+                if (tempDist < closestDist)
+                {
+                    closestDist = tempDist;
+                    closestPredator = tempPredator;
+                }
+            }
+            return closestPredator;
+        }
+
+        /// <summary>
+        /// Function to check if there are any prey that can be eaten by a given predator
+        /// </summary>
+        /// <param name="predator">Predator to check for prey to eat</param>
+        /// <returns>Prey that were eaten, null if there wasn't one</returns>
+        public Prey? CheckCanEat(Predator predator, Prey prey)
+		{
+			// using manhattan distance in the hopes that it'll make this run faster
+			if(predator == null || prey == null) return null;
+			if(Math.Abs(prey.xLoc - predator.xLoc) + Math.Abs(prey.yLoc - predator.yLoc) < _eatThresholdDist)
+			{
+				predator.Eat();
+				Prey.Remove(prey);
+				return prey;
 			}
 			return null;
 		}

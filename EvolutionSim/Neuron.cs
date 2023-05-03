@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace EvolutionSim
 {
@@ -19,7 +20,7 @@ namespace EvolutionSim
 
 		private static double Eta = 0.15;
 		private static double Alpha = 0.5;
-		private List<Connection> m_outputWeights;
+		private List<Connection> m_outputWeights = new();
 		private int m_myIndex;
 		private double m_gradient;
 
@@ -34,6 +35,7 @@ namespace EvolutionSim
 			{
 				m_outputWeights.Add(new Connection(RandomWeight()));
 			}
+			m_myIndex = myIndex;
 		}
 
 		/// <summary>
@@ -43,6 +45,7 @@ namespace EvolutionSim
 		public void FeedForward(List<Neuron> prevLayer)
 		{
 			double sum = 0;
+
 			for(int i = 0; i < prevLayer.Count; i++)
 			{
 				sum += prevLayer[i].m_outputVal
