@@ -93,7 +93,6 @@ namespace Display
                     SimState = SimulationState.Running;
                     try
                     {
-                        Debug.WriteLine(PredatorsTextBox.Text);
                         InitialPreds = Convert.ToInt32(PredatorsTextBox.Text);
                     }
                     catch
@@ -135,7 +134,6 @@ namespace Display
         void BeginSimulation()
         {
             MapControl = MapControlSingleton.GetInstance();
-            Debug.WriteLine(InitialPreds);
             MapControl.CreateSimulation(Map, InitialPreds, InitialPrey);
             DisplayThread = new Thread(DisplayLoop);
             DisplayThread.Start();

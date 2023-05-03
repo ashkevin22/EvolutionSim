@@ -13,7 +13,6 @@ namespace EvolutionSim
 
         public void Update(int numPreds, int numPrey)
         {
-            Debug.WriteLine("here");
             _writer.WriteLine($"{numPreds},{numPrey}");
             _writer.Flush();
         }

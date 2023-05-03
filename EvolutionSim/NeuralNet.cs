@@ -52,7 +52,7 @@ namespace EvolutionSim
 		/// <param name="inputVals">Initial input values for the neural network</param>
 		public void FeedForward(List<double> inputVals)
 		{
-			//Debug.Assert(inputVals.Count == m_layers[0].Count - 1);
+			Debug.Assert(inputVals.Count == m_layers[0].Count - 1);
 
 			for(int i = 0; i < inputVals.Count; i++)
 			{
